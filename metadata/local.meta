@@ -1,0 +1,22 @@
+[app/ui]
+version = 8.2.0
+modtime = 1630118358.596419900
+
+[app/launcher]
+version = 8.2.0
+modtime = 1630118358.609425900
+
+[indexes/ecommerce]
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630118764.332224200
+
+[props/ecommerce]
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630119301.362002400
+
+[views/prova_tecnica]
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630123202.417796600

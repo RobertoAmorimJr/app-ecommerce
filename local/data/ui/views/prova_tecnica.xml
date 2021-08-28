@@ -1,0 +1,44 @@
+<dashboard>
+  <label>Prova Técnica</label>
+  <description>Prova Técnica Splunk - Accenture</description>
+  <row>
+    <panel>
+      <table>
+        <title>Quantidade de Vendas Bem Sucedidas</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1
+| stats count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Média de Fluxo de Entrada de Caixa por Venda</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1
+| stats avg(Valor) as Media
+| eval Media=round(Media,2)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Quantidade de clientes</title>
+        <search>
+          <query>index="ecommerce"
+| stats dc(IP) as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
