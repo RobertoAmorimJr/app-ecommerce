@@ -19,4 +19,25 @@ modtime = 1630119301.362002400
 [views/prova_tecnica]
 owner = robertoamorim
 version = 8.2.0
-modtime = 1630123202.417796600
+modtime = 1630207095.773524800
+
+[lookups/bandeiras.csv]
+access = read : [ * ], write : [ * ]
+export = system
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630124435.512481500
+
+[lookups/metodos.csv]
+access = read : [ * ], write : [ * ]
+export = system
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630125881.527961000
+
+[lookups/campanhas.csv]
+access = read : [ * ], write : [ * ]
+export = system
+owner = robertoamorim
+version = 8.2.0
+modtime = 1630126228.829287500

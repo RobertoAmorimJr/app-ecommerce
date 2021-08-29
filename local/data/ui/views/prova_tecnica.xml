@@ -3,8 +3,8 @@
   <description>Prova Técnica Splunk - Accenture</description>
   <row>
     <panel>
-      <table>
-        <title>Quantidade de Vendas Bem Sucedidas</title>
+      <single>
+        <title>Vendas Bem Sucedidas</title>
         <search>
           <query>index="ecommerce" Vendeu=1
 | stats count as Qtde</query>
@@ -13,10 +13,10 @@
         </search>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-      </table>
+      </single>
     </panel>
     <panel>
-      <table>
+      <single>
         <title>Média de Fluxo de Entrada de Caixa por Venda</title>
         <search>
           <query>index="ecommerce" Vendeu=1
@@ -25,12 +25,18 @@
           <earliest>0</earliest>
           <latest></latest>
         </search>
+        <option name="colorMode">none</option>
         <option name="drilldown">none</option>
-      </table>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="unit">R$</option>
+        <option name="unitPosition">before</option>
+        <option name="useColors">0</option>
+      </single>
     </panel>
     <panel>
-      <table>
-        <title>Quantidade de clientes</title>
+      <single>
+        <title>Clientes Únicos</title>
         <search>
           <query>index="ecommerce"
 | stats dc(IP) as Qtde</query>
@@ -38,7 +44,171 @@
           <latest></latest>
         </search>
         <option name="drilldown">none</option>
-      </table>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Compras com Visa</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1 
+| lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
+| where Bandeira="Visa"
+| stats count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x006d9c","0xdc4e41"]</option>
+        <option name="rangeValues">[99999]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Compras por Bandeiras</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1 
+| lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
+| stats count as Qtde by Bandeira</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="charting.fieldColors">{"Visa":0x006d9c,"Mastercard":0xdc4e41}</option>
+      </chart>
+    </panel>
+    <panel>
+      <single>
+        <title>Compras com Mastercard</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1 
+| lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
+| where Bandeira="Mastercard"
+| stats count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[999999]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Metodos de Compra</title>
+        <search>
+          <query>index="ecommerce" Vendeu=1 
+| lookup metodos.csv codigo_metodo as MetododeCompra output nome_metodo as MetododeCompra
+| stats count as Qtde by MetododeCompra</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Principais Campanhas</title>
+        <search>
+          <query>index="ecommerce" 
+| lookup campanhas.csv codigo_campanha as Campanha output nome_campanha as Campanha
+| stats count as Qtde by Campanha</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Vendas Mal Sucedidas</title>
+        <search>
+          <query>index="ecommerce" Vendeu=0
+| stats count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top 10 Produtos abandonados no carrinho</title>
+        <search>
+          <query>index="ecommerce" Vendeu=0
+| top 10 Produto
+| rename count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Categorias mais Populares</title>
+        <search>
+          <query>index="ecommerce"
+| top 5 Categoria
+| rename count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Produtos mais Procurados</title>
+        <search>
+          <query>index="ecommerce"
+| top 10 Produto
+| rename count as Qtde</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <map>
+        <title>Mapa com categorias por região</title>
+        <search>
+          <query>index="ecommerce"
+| iplocation IP
+| geostats count by Categoria latfield=lat longfield=lon</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">505</option>
+        <option name="mapping.map.center">(-13.97,-55.55)</option>
+        <option name="mapping.map.scrollZoom">0</option>
+        <option name="mapping.map.zoom">4</option>
+        <option name="mapping.tileLayer.url">http://mt0.google.com/vt/lyrs=y&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}&amp;s=Ga</option>
+        <option name="mapping.type">marker</option>
+      </map>
     </panel>
   </row>
 </dashboard>
