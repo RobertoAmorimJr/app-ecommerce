@@ -1,2 +1,4 @@
 # app-ecommerce
-teste de primeiro commit
+PROVA TÉCNICA SPLUNK – ACCENTURE
+
+Documentação do App encontra-se no diretório raiz.
