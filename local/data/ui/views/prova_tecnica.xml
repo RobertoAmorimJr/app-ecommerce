@@ -1,29 +1,57 @@
-<dashboard>
+<form>
   <label>Prova Técnica</label>
   <description>Prova Técnica Splunk - Accenture</description>
+  <search id="query_flutuante">
+    <query>
+      index="ecommerce"
+      | table Vendeu Valor IP Bandeira MetododeCompra Campanha Categoria Produto 
+    </query>
+    <earliest>0</earliest>
+    <latest></latest>
+  </search>
+  <fieldset submitButton="false" autoRun="false"></fieldset>
   <row>
     <panel>
+      <input type="dropdown" token="categoria_selecionada" searchWhenChanged="true">
+        <label>Vendas Bem Sucedidas</label>
+        <fieldForLabel>Categoria</fieldForLabel>
+        <fieldForValue>Categoria</fieldForValue>
+        <search base="query_flutuante">
+          <query>| dedup Categoria
+| table Categoria</query>
+        </search>
+        <choice value="*">Todos</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
       <single>
-        <title>Vendas Bem Sucedidas</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1
-| stats count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
+        <search base="query_flutuante">
+          <query>
+            | search Vendeu=1 Categoria="$categoria_selecionada$"
+            | stats count as Qtde
+          </query>
         </search>
         <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="refresh.display">progressbar</option>
       </single>
     </panel>
     <panel>
+      <input type="dropdown" token="fluxo" searchWhenChanged="true">
+        <label>Média de Fluxo de Caixa por Venda</label>
+        <choice value="(MetododeCompra=1 OR MetododeCompra=2)">Debito e Credito</choice>
+        <choice value="MetododeCompra=1">Debito</choice>
+        <choice value="MetododeCompra=2">Credito</choice>
+        <default>(MetododeCompra=1 OR MetododeCompra=2)</default>
+        <initialValue>(MetododeCompra=1 OR MetododeCompra=2)</initialValue>
+      </input>
       <single>
-        <title>Média de Fluxo de Entrada de Caixa por Venda</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1
-| stats avg(Valor) as Media
-| eval Media=round(Media,2)</query>
-          <earliest>0</earliest>
-          <latest></latest>
+        <search base="query_flutuante">
+          <query>
+            | search Vendeu=1 $fluxo$
+            | stats avg(Valor) as Media
+            | eval Media=round(Media,2)
+          </query>
         </search>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
@@ -37,11 +65,10 @@
     <panel>
       <single>
         <title>Clientes Únicos</title>
-        <search>
-          <query>index="ecommerce"
-| stats dc(IP) as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
+        <search base="query_flutuante">
+          <query>
+            | stats dc(IP) as Qtde
+          </query>
         </search>
         <option name="drilldown">none</option>
       </single>
@@ -51,13 +78,12 @@
     <panel>
       <single>
         <title>Compras com Visa</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1 
-| lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
-| where Bandeira="Visa"
-| stats count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
+        <search base="query_flutuante">
+          <query>
+            | where Vendeu=1 
+            | lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
+            | where Bandeira="Visa"
+            | stats count as Qtde</query>
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
@@ -69,12 +95,10 @@
     <panel>
       <chart>
         <title>Compras por Bandeiras</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1 
+        <search base="query_flutuante">
+          <query>| where Vendeu=1 
 | lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
 | stats count as Qtde by Bandeira</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
@@ -85,13 +109,11 @@
     <panel>
       <single>
         <title>Compras com Mastercard</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1 
+        <search base="query_flutuante">
+          <query>| where Vendeu=1 
 | lookup bandeiras.csv codigo_bandeira as Bandeira output nome_bandeira as Bandeira
 | where Bandeira="Mastercard"
 | stats count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
@@ -106,12 +128,10 @@
     <panel>
       <chart>
         <title>Metodos de Compra</title>
-        <search>
-          <query>index="ecommerce" Vendeu=1 
+        <search base="query_flutuante">
+          <query>| where Vendeu=1 
 | lookup metodos.csv codigo_metodo as MetododeCompra output nome_metodo as MetododeCompra
 | stats count as Qtde by MetododeCompra</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">column</option>
         <option name="charting.drilldown">none</option>
@@ -120,12 +140,10 @@
     <panel>
       <chart>
         <title>Principais Campanhas</title>
-        <search>
-          <query>index="ecommerce" 
+        <search base="query_flutuante">
+          <query> 
 | lookup campanhas.csv codigo_campanha as Campanha output nome_campanha as Campanha
 | stats count as Qtde by Campanha</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
@@ -136,11 +154,9 @@
     <panel>
       <single>
         <title>Vendas Mal Sucedidas</title>
-        <search>
-          <query>index="ecommerce" Vendeu=0
+        <search base="query_flutuante">
+          <query>| where Vendeu=0
 | stats count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="drilldown">none</option>
       </single>
@@ -148,12 +164,10 @@
     <panel>
       <chart>
         <title>Top 10 Produtos abandonados no carrinho</title>
-        <search>
-          <query>index="ecommerce" Vendeu=0
+        <search base="query_flutuante">
+          <query>| where Vendeu=0
 | top 10 Produto
 | rename count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">bar</option>
         <option name="charting.drilldown">none</option>
@@ -164,26 +178,36 @@
     <panel>
       <chart>
         <title>Categorias mais Populares</title>
-        <search>
-          <query>index="ecommerce"
+        <search base="query_flutuante">
+          <query>
 | top 5 Categoria
 | rename count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">pie</option>
-        <option name="charting.drilldown">none</option>
+        <option name="charting.drilldown">all</option>
+        <drilldown>
+          <set token="categoria_popular">$click.value$</set>
+        </drilldown>
       </chart>
+      <table depends="$categoria_popular$">
+        <title>Top 5 $categoria_popular$</title>
+        <search base="query_flutuante">
+          <query>
+            | where Categoria="$categoria_popular$"
+            | top 5 Produto
+            | rename count as Qtde Percent as Porcentagem
+                    </query>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
     </panel>
     <panel>
       <chart>
         <title>Produtos mais Procurados</title>
-        <search>
-          <query>index="ecommerce"
+        <search base="query_flutuante">
+          <query>
 | top 10 Produto
 | rename count as Qtde</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
@@ -194,12 +218,10 @@
     <panel>
       <map>
         <title>Mapa com categorias por região</title>
-        <search>
-          <query>index="ecommerce"
+        <search base="query_flutuante">
+          <query>
 | iplocation IP
 | geostats count by Categoria latfield=lat longfield=lon</query>
-          <earliest>0</earliest>
-          <latest></latest>
         </search>
         <option name="drilldown">none</option>
         <option name="height">505</option>
@@ -211,4 +233,4 @@
       </map>
     </panel>
   </row>
-</dashboard>
+</form>
